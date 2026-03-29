@@ -12,7 +12,7 @@ import jsPDF from 'jspdf';
 export default function InvoiceDetail({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
   const router = useRouter();
-  const { invoices, clients, updateInvoice } = useStore();
+  const { invoices, clients, updateInvoice, logoUrl } = useStore();
   const [mounted, setMounted] = useState(false);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [client, setClient] = useState<Client | null>(null);
@@ -232,7 +232,10 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
             </div>
           </div>
 
-          <div style={{ textAlign: 'right' }}>
+          <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+             {logoUrl && (
+                <img src={logoUrl} alt="studio-logo" style={{ maxHeight: '60px', width: 'auto', marginBottom: '8px' }} />
+             )}
             <h2 style={{ fontSize: '24px', fontWeight: '900', margin: '0 0 5px', letterSpacing: '0.5px' }}>mvee.cuts</h2>
             <p style={{ fontSize: '13px', fontWeight: '300', color: COLORS.TEXT_DARK, margin: 0 }}>INVOICE NO: #{invoice.id.replace('INV-', '')}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '25px' }}>

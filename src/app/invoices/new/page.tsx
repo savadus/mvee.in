@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function NewInvoice() {
   const router = useRouter();
-  const { clients, addInvoice, addClient } = useStore();
+  const { clients, addInvoice, addClient, settings } = useStore();
   const [mounted, setMounted] = useState(false);
   const [clientId, setClientId] = useState('');
   const [isQuickAdd, setIsQuickAdd] = useState(false);
@@ -16,13 +16,15 @@ export default function NewInvoice() {
   const [date, setDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [discount, setDiscount] = useState(0);
-  const [upiId, setUpiId] = useState('yourname@upi'); // Default or settings
+  const [upiId, setUpiId] = useState('');
   const [items, setItems] = useState<Omit<InvoiceItem, 'id'>[]>([
     { description: '', quantity: 1, price: 0 }
   ]);
 
   useEffect(() => {
     setMounted(true);
+    setUpiId(settings.upiId || 'yourname@upi');
+    
     // Set today's date
     const today = new Date();
     setDate(today.toISOString().split('T')[0]);

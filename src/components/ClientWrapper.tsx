@@ -16,7 +16,7 @@ export default function ClientWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const { theme, toggleTheme } = useStore();
+  const { theme, toggleTheme, fetchData, logoUrl } = useStore();
   const [mounted, setMounted] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [passcode, setPasscode] = useState('');
@@ -24,6 +24,7 @@ export default function ClientWrapper({
 
   useEffect(() => {
     setMounted(true);
+    fetchData(); // Load data from Supabase
     const savedUnlock = localStorage.getItem('admin_unlocked');
     if (savedUnlock === 'true') setIsUnlocked(true);
     document.documentElement.setAttribute('data-theme', theme);

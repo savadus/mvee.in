@@ -80,17 +80,33 @@ export const useStore = create<BillingState>()(
       })),
 
       fetchData: async () => {
-        const { data: clients } = await supabase.from('clients').select('*');
-        const { data: invoices } = await supabase.from('invoices').select('*');
-        if (clients) set({ clients });
-        if (invoices) set({ invoices: invoices as Invoice[] });
+        console.log('☁️ Fetching data from Supabase...');
+        try {
+          const { data: clients, error: clientErr } = await supabase.from('clients').select('*');
+          const { data: invoices, error: invErr } = await supabase.from('invoices').select('*');
+          
+          if (clientErr) console.error('❌ Supabase Client Error:', clientErr.message);
+          if (invErr) console.error('❌ Supabase Invoice Error:', invErr.message);
+
+          if (clients) set({ clients });
+          if (invoices) set({ invoices: invoices as Invoice[] });
+          
+          console.log('✅ Sync Complete. Clients:', clients?.length, 'Invoices:', invoices?.length);
+        } catch (e) {
+          console.error('❌ Sync Failed:', e);
+        }
       },
 
       addClient: async (client) => {
         const id = Math.random().toString(36).substr(2, 9);
         const newClient = { ...client, id };
         set((state) => ({ clients: [...state.clients, newClient] }));
-        await supabase.from('clients').insert([newClient]);
+        
+        const { error } = await supabase.from('clients').insert([newClient]);
+        if (error) {
+          console.error('❌ Failed to save client to Supabase:', error.message);
+          alert('Error saving to cloud! Check Supabase RLS policies.');
+        }
       },
 
       updateClient: async (id, updatedClient) => {
@@ -111,7 +127,12 @@ export const useStore = create<BillingState>()(
         const id = `INV-${Date.now().toString().slice(-6)}`;
         const newInvoice = { ...invoice, id };
         set((state) => ({ invoices: [...state.invoices, newInvoice] }));
-        await supabase.from('invoices').insert([newInvoice]);
+        
+        const { error } = await supabase.from('invoices').insert([newInvoice]);
+        if (error) {
+          console.error('❌ Failed to save invoice to Supabase:', error.message);
+          alert('Error saving invoice to cloud! Check Supabase RLS policies.');
+        }
       },
 
       updateInvoice: async (id, updatedInvoice) => {

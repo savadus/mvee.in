@@ -223,11 +223,11 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Phone size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
-                <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.phone || '+91 0000 000 000'}</span>
+                <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.phone || '..............................'}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Mail size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
-                <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.email || 'client@example.com'}</span>
+                <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.email || '..............................'}</span>
               </div>
             </div>
           </div>

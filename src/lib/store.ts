@@ -80,20 +80,30 @@ export const useStore = create<BillingState>()(
       })),
 
       fetchData: async () => {
-        console.log('☁️ Fetching data from Supabase...');
         try {
-          const { data: clients, error: clientErr } = await supabase.from('clients').select('*');
-          const { data: invoices, error: invErr } = await supabase.from('invoices').select('*');
-          
-          if (clientErr) console.error('❌ Supabase Client Error:', clientErr.message);
-          if (invErr) console.error('❌ Supabase Invoice Error:', invErr.message);
+          const { data: clients } = await supabase.from('clients').select('*');
+          const { data: rawInvoices } = await supabase.from('invoices').select('*');
 
           if (clients) set({ clients });
-          if (invoices) set({ invoices: invoices as Invoice[] });
           
-          console.log('✅ Sync Complete. Clients:', clients?.length, 'Invoices:', invoices?.length);
+          if (rawInvoices) {
+            // Map snake_case from DB to camelCase for app
+            const invoices = rawInvoices.map((inv: any) => ({
+              id: inv.id,
+              clientId: inv.client_id,
+              amount: inv.amount,
+              status: inv.status,
+              date: inv.date,
+              dueDate: inv.due_date,
+              items: inv.items,
+              notes: inv.notes,
+              upiId: inv.upi_id,
+              discount: inv.discount
+            }));
+            set({ invoices });
+          }
         } catch (e) {
-          console.error('❌ Sync Failed:', e);
+          console.error('Fetch error:', e);
         }
       },
 
@@ -101,12 +111,7 @@ export const useStore = create<BillingState>()(
         const id = Math.random().toString(36).substr(2, 9);
         const newClient = { ...client, id };
         set((state) => ({ clients: [...state.clients, newClient] }));
-        
-        const { error } = await supabase.from('clients').insert([newClient]);
-        if (error) {
-          console.error('❌ Failed to save client to Supabase:', error.message);
-          alert('Error saving to cloud! Check Supabase RLS policies.');
-        }
+        await supabase.from('clients').insert([newClient]);
       },
 
       updateClient: async (id, updatedClient) => {
@@ -126,12 +131,28 @@ export const useStore = create<BillingState>()(
       addInvoice: async (invoice) => {
         const id = `INV-${Date.now().toString().slice(-6)}`;
         const newInvoice = { ...invoice, id };
+        
+        // Optimistic update
         set((state) => ({ invoices: [...state.invoices, newInvoice] }));
         
-        const { error } = await supabase.from('invoices').insert([newInvoice]);
+        // Map camelCase to snake_case for DB
+        const dbInvoice = {
+          id: newInvoice.id,
+          client_id: newInvoice.clientId,
+          amount: newInvoice.amount,
+          status: newInvoice.status,
+          date: newInvoice.date,
+          due_date: newInvoice.dueDate,
+          items: newInvoice.items,
+          notes: newInvoice.notes,
+          upi_id: newInvoice.upiId,
+          discount: newInvoice.discount
+        };
+
+        const { error } = await supabase.from('invoices').insert([dbInvoice]);
         if (error) {
-          console.error('❌ Failed to save invoice to Supabase:', error.message);
-          alert('Error saving invoice to cloud! Check Supabase RLS policies.');
+          console.error('❌ Supabase Insert Error:', error.message);
+          alert('Error saving to cloud! Check console for details.');
         }
       },
 
@@ -141,7 +162,23 @@ export const useStore = create<BillingState>()(
             inv.id === id ? { ...inv, ...updatedInvoice } : inv
           ),
         }));
-        await supabase.from('invoices').update(updatedInvoice).eq('id', id);
+        
+        // Map update payload to snake_case if necessary
+        const dbUpdate: any = { ...updatedInvoice };
+        if (updatedInvoice.clientId) {
+          dbUpdate.client_id = updatedInvoice.clientId;
+          delete dbUpdate.clientId;
+        }
+        if (updatedInvoice.dueDate) {
+          dbUpdate.due_date = updatedInvoice.dueDate;
+          delete dbUpdate.dueDate;
+        }
+        if (updatedInvoice.upiId) {
+          dbUpdate.upi_id = updatedInvoice.upiId;
+          delete dbUpdate.upiId;
+        }
+
+        await supabase.from('invoices').update(dbUpdate).eq('id', id);
       },
 
       deleteInvoice: async (id) => {

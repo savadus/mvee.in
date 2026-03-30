@@ -87,8 +87,7 @@ export const useStore = create<BillingState>()(
           if (clients) set({ clients });
           
           if (rawInvoices) {
-            // Map snake_case from DB to camelCase for app
-            const invoices = rawInvoices.map((inv: any) => ({
+            const invoices: Invoice[] = rawInvoices.map((inv: any) => ({
               id: inv.id,
               clientId: inv.client_id,
               amount: inv.amount,
@@ -130,12 +129,10 @@ export const useStore = create<BillingState>()(
 
       addInvoice: async (invoice) => {
         const id = `INV-${Date.now().toString().slice(-6)}`;
-        const newInvoice = { ...invoice, id };
+        const newInvoice: Invoice = { ...invoice, id };
         
-        // Optimistic update
         set((state) => ({ invoices: [...state.invoices, newInvoice] }));
         
-        // Map camelCase to snake_case for DB
         const dbInvoice = {
           id: newInvoice.id,
           client_id: newInvoice.clientId,
@@ -163,7 +160,6 @@ export const useStore = create<BillingState>()(
           ),
         }));
         
-        // Map update payload to snake_case if necessary
         const dbUpdate: any = { ...updatedInvoice };
         if (updatedInvoice.clientId) {
           dbUpdate.client_id = updatedInvoice.clientId;

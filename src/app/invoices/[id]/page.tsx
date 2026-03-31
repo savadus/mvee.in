@@ -296,107 +296,91 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
           <div>
             <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
             <div id="qr-code-to-share" style={{ 
-              background: '#6b8341', 
-              width: '320px', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              borderRadius: '20px', 
+              position: 'relative',
+              width: '400px', 
+              height: '560px',
+              background: `url('/scang.png')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              borderRadius: '20px',
               overflow: 'hidden',
               boxShadow: '0 10px 30px rgba(0,0,0,0.15)'
             }}>
-              {/* Premium Header Bar */}
+              {/* Dynamic Header Overlay (covers top bar in scang.png) */}
               <div style={{ 
+                position: 'absolute',
+                top: '25px', // Adjusted to cover #57568 | 300/-
+                left: '50%',
+                transform: 'translateX(-50%)',
                 background: 'white', 
-                margin: '12px auto 0', 
-                padding: '4px 20px', 
+                padding: '4px 30px', 
                 borderRadius: '8px', 
-                width: 'fit-content' 
+                width: 'fit-content',
+                zIndex: 2
               }}>
-                <p style={{ margin: 0, fontWeight: '800', color: '#6b8341', fontSize: '15px' }}>
+                <p style={{ margin: 0, fontWeight: '800', color: '#6b8341', fontSize: '18px', letterSpacing: '0.5px' }}>
                   #{invoice.id.replace('INV-', '')} | {invoice.amount}/-
                 </p>
               </div>
 
-              {/* Main White Card */}
+              {/* Central Dynamic QR Code (Perfectly placed over scang.png QR) */}
               <div style={{ 
-                background: 'white', 
-                margin: '15px', 
-                borderRadius: '40px', 
-                padding: '30px 20px',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -43%)',
+                width: '260px',
+                height: '260px',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
-                flex: 1
+                justifyContent: 'center',
+                background: 'white', // Ensure clean background
+                zIndex: 1
               }}>
-                {/* Visual Dot */}
-                <div style={{ width: '12px', height: '12px', background: '#6b8341', borderRadius: '50%', marginBottom: '15px' }}></div>
+                <QRCodeSVG 
+                  value={upiLink} 
+                  size={260}
+                  level="H"
+                  style={{ width: '100%', height: '100%' }}
+                />
                 
-                <h3 style={{ margin: '0 0 4px', fontWeight: '900', color: '#000', fontSize: '20px' }}>Scan For Pay</h3>
-                <p style={{ margin: '0 0 25px', color: '#666', fontSize: '13px', fontWeight: '500' }}>(share to your upi app)</p>
-
-                <div style={{ position: 'relative', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <QRCodeSVG 
-                    value={upiLink} 
-                    size={200}
-                    level="H"
-                    style={{ width: '100%', height: '100%' }}
-                  />
-                  {/* Circular Branding Overlay */}
+                {/* Branding Overlay (Higher Res) */}
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 10
+                }}>
                   <div style={{
-                    position: 'absolute',
-                    inset: 0,
+                    width: '74px',
+                    height: '74px',
+                    background: '#6b8341',
+                    borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    zIndex: 10
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                   }}>
                     <div style={{
-                      width: '60px',
-                      height: '60px',
-                      background: '#6b8341',
+                      width: '56px',
+                      height: '56px',
+                      background: 'white',
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                      overflow: 'hidden'
                     }}>
-                      <div style={{
-                        width: '46px',
-                        height: '46px',
-                        background: 'white',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden'
-                      }}>
-                        <img 
-                          src="/scscsc.jpg" 
-                          alt="logo" 
-                          style={{ 
-                            width: '190%', 
-                            height: '190%', 
-                            objectFit: 'cover',
-                            objectPosition: 'center 60%'
-                          }} 
-                        />
-                      </div>
+                      <img 
+                        src="/scscsc.jpg" 
+                        alt="logo" 
+                        style={{ width: '190%', height: '190%', objectFit: 'cover', objectPosition: 'center 60%' }} 
+                      />
                     </div>
                   </div>
                 </div>
-
-                {/* Secure Payment Brands (Row) */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '30px', opacity: 0.8 }}>
-                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#007aff' }}>GPay</span>
-                   <span style={{ width: '1px', height: '12px', background: '#eee' }}></span>
-                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#5f259f' }}>PhonePe</span>
-                   <span style={{ width: '1px', height: '12px', background: '#eee' }}></span>
-                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#00baf2' }}>Paytm</span>
-                   <span style={{ width: '1px', height: '12px', background: '#eee' }}></span>
-                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#000' }}>UPI</span>
-                </div>
-
-                <p style={{ margin: '15px 0 0', fontSize: '11px', color: '#888', fontWeight: '600' }}>mvee.in</p>
               </div>
             </div>
           </div>

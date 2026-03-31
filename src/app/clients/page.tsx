@@ -54,8 +54,23 @@ export default function ClientsPage() {
           <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Clients</h1>
           <p className="text-muted">Manage your customer relationships and contact details.</p>
         </div>
-        <button type="button" className="btn-primary" onClick={() => { setShowModal(true); setEditingClient(null); }}>
-          <Plus size={20} /> Add Client
+        <button 
+          type="button" 
+          className="btn-primary" 
+          onClick={() => { setShowModal(true); setEditingClient(null); }}
+          style={{ 
+            padding: '12px',
+            minWidth: '45px',
+            height: '45px',
+            borderRadius: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <Plus size={22} strokeWidth={3} />
+          <span className="hide-mobile" style={{ marginLeft: '4px', fontWeight: 'bold', paddingRight: '4px' }}>Add Client</span>
         </button>
       </div>
 

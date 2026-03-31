@@ -33,8 +33,22 @@ export default function InvoicesPage() {
           <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Invoices</h1>
           <p className="text-muted">Track and manage your client billing.</p>
         </div>
-        <Link href="/invoices/new" className="btn-primary" style={{ padding: '14px 28px', borderRadius: '18px' }}>
-          <Plus size={20} strokeWidth={2.5} /> Create New Invoice
+        <Link 
+          href="/invoices/new" 
+          className="btn-primary" 
+          style={{ 
+            padding: '12px',
+            minWidth: '45px',
+            height: '45px',
+            borderRadius: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <Plus size={22} strokeWidth={3} />
+          <span className="hide-mobile" style={{ marginLeft: '4px', fontWeight: 'bold', paddingRight: '4px' }}>Create New Invoice</span>
         </Link>
       </div>
 

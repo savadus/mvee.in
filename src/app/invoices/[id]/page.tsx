@@ -298,7 +298,7 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
             <div id="qr-code-to-share" style={{ position: 'relative', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'inline-block', background: 'white' }}>
               <QRCodeSVG 
                 value={upiLink} 
-                size={140}
+                size={130}
                 level="H"
               />
               {/* Refined Round Branding Overlay */}

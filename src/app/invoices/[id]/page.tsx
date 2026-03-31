@@ -328,7 +328,7 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
                     width: '60px', // Larger branding for the high-res capture
                     height: '60px',
                     background: '#6b8341',
-                    borderRadius: '8px',
+                    borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

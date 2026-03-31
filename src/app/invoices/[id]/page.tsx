@@ -295,91 +295,47 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
         <div className="flex justify-between items-start" style={{ padding: '20px 60px' }}>
           <div>
             <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
-            <div id="qr-code-to-share" style={{ 
-              position: 'relative',
-              width: '400px', 
-              height: '560px',
-              background: `url('/scang.png')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              borderRadius: '20px',
-              overflow: 'hidden',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.15)'
-            }}>
-              {/* Dynamic Header Overlay (covers top bar in scang.png) */}
-              <div style={{ 
-                position: 'absolute',
-                top: '25px', // Adjusted to cover #57568 | 300/-
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'white', 
-                padding: '4px 30px', 
-                borderRadius: '8px', 
-                width: 'fit-content',
-                zIndex: 2
-              }}>
-                <p style={{ margin: 0, fontWeight: '800', color: '#6b8341', fontSize: '18px', letterSpacing: '0.5px' }}>
-                  #{invoice.id.replace('INV-', '')} | {invoice.amount}/-
-                </p>
-              </div>
-
-              {/* Central Dynamic QR Code (Perfectly placed over scang.png QR) */}
-              <div style={{ 
+            <div id="qr-code-to-share" style={{ position: 'relative', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'inline-block', background: 'white' }}>
+              <QRCodeSVG 
+                value={upiLink} 
+                size={140}
+                level="H"
+              />
+              {/* Refined Round Branding Overlay */}
+              <div style={{
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, -43%)',
-                width: '260px',
-                height: '260px',
+                transform: 'translate(-50%, -50%)',
+                width: '40px',
+                height: '40px',
+                background: '#6b8341', 
+                borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'white', // Ensure clean background
-                zIndex: 1
+                zIndex: 10
               }}>
-                <QRCodeSVG 
-                  value={upiLink} 
-                  size={260}
-                  level="H"
-                  style={{ width: '100%', height: '100%' }}
-                />
-                
-                {/* Branding Overlay (Higher Res) */}
                 <div style={{
-                  position: 'absolute',
-                  inset: 0,
+                  width: '30px',
+                  height: '30px',
+                  background: 'white',
+                  borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  zIndex: 10
+                  overflow: 'hidden'
                 }}>
-                  <div style={{
-                    width: '74px',
-                    height: '74px',
-                    background: '#6b8341',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-                  }}>
-                    <div style={{
-                      width: '56px',
-                      height: '56px',
-                      background: 'white',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      overflow: 'hidden'
-                    }}>
-                      <img 
-                        src="/scscsc.jpg" 
-                        alt="logo" 
-                        style={{ width: '190%', height: '190%', objectFit: 'cover', objectPosition: 'center 60%' }} 
-                      />
-                    </div>
-                  </div>
+                  <img 
+                    src="/scscsc.jpg" 
+                    alt="logo" 
+                    style={{ 
+                      width: '190%', 
+                      height: '190%', 
+                      objectFit: 'cover',
+                      objectPosition: 'center 60%'
+                    }}
+                  />
                 </div>
               </div>
             </div>

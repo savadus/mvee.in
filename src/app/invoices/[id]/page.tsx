@@ -71,7 +71,7 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
     try {
       if (navigator.share) {
         const canvas = await html2canvas(qrElement, { 
-          scale: 3, 
+          scale: 4, 
           backgroundColor: '#ffffff',
           useCORS: true,
           logging: false
@@ -295,48 +295,73 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
         <div className="flex justify-between items-start" style={{ padding: '20px 60px' }}>
           <div>
             <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
-            <div id="qr-code-to-share" style={{ position: 'relative', border: '2px solid #000', padding: '6px', borderRadius: '4px', display: 'inline-block', background: 'white' }}>
-              <QRCodeSVG 
-                value={upiLink} 
-                size={110}
-                level="H"
-              />
-              {/* Custom Centered Branding Overlay (Matches Image 2) */}
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '32px',
-                height: '32px',
-                background: '#6b8341', // Business Green
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10
-              }}>
+            <div id="qr-code-to-share" style={{ 
+              background: 'white', 
+              width: '280px', 
+              borderRadius: '20px', 
+              padding: '25px', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+              border: '1px solid #eee'
+            }}>
+              <p style={{ margin: '0 0 15px', color: '#6b8341', fontWeight: '900', fontSize: '16px', letterSpacing: '1px' }}>MVEE CUTS</p>
+              
+              <div style={{ position: 'relative', width: '210px', height: '210px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <QRCodeSVG 
+                  value={upiLink} 
+                  size={210}
+                  level="H"
+                  style={{ width: '100%', height: '100%' }}
+                />
+                {/* Fixed Flex-Centering for perfect html2canvas capture */}
                 <div style={{
-                  width: '24px',
-                  height: '24px',
-                  background: 'white',
-                  borderRadius: '50%',
+                  position: 'absolute',
+                  inset: 0,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  overflow: 'hidden'
+                  zIndex: 10
                 }}>
-                  <img 
-                    src="/scscsc.jpg" 
-                    alt="qr-logo" 
-                    style={{ 
-                      width: '190%', 
-                      height: '190%', 
-                      objectFit: 'cover',
-                      objectPosition: 'center 60%' // Hide 'mvee.' text
-                    }}
-                  />
+                  <div style={{
+                    width: '60px', // Larger branding for the high-res capture
+                    height: '60px',
+                    background: '#6b8341',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                  }}>
+                    <div style={{
+                      width: '46px',
+                      height: '46px',
+                      background: 'white',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden'
+                    }}>
+                      <img 
+                        src="/scscsc.jpg" 
+                        alt="logo" 
+                        style={{ 
+                          width: '190%', 
+                          height: '190%', 
+                          objectFit: 'cover',
+                          objectPosition: 'center 60%'
+                        }} 
+                      />
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                <p style={{ margin: 0, fontWeight: '800', color: '#000', fontSize: '14px' }}>#{invoice.id.replace('INV-', '')}</p>
+                <p style={{ margin: 0, fontWeight: '700', color: '#666', fontSize: '18px' }}>₹{invoice.amount.toLocaleString()}</p>
               </div>
             </div>
           </div>

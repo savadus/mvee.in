@@ -296,72 +296,107 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
           <div>
             <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
             <div id="qr-code-to-share" style={{ 
-              background: 'white', 
-              width: '280px', 
-              borderRadius: '20px', 
-              padding: '25px', 
+              background: '#6b8341', 
+              width: '320px', 
               display: 'flex', 
               flexDirection: 'column', 
-              alignItems: 'center', 
-              boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-              border: '1px solid #eee'
+              borderRadius: '20px', 
+              overflow: 'hidden',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.15)'
             }}>
-              <p style={{ margin: '0 0 15px', color: '#6b8341', fontWeight: '900', fontSize: '16px', letterSpacing: '1px' }}>MVEE CUTS</p>
-              
-              <div style={{ position: 'relative', width: '210px', height: '210px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <QRCodeSVG 
-                  value={upiLink} 
-                  size={210}
-                  level="H"
-                  style={{ width: '100%', height: '100%' }}
-                />
-                {/* Fixed Flex-Centering for perfect html2canvas capture */}
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 10
-                }}>
+              {/* Premium Header Bar */}
+              <div style={{ 
+                background: 'white', 
+                margin: '12px auto 0', 
+                padding: '4px 20px', 
+                borderRadius: '8px', 
+                width: 'fit-content' 
+              }}>
+                <p style={{ margin: 0, fontWeight: '800', color: '#6b8341', fontSize: '15px' }}>
+                  #{invoice.id.replace('INV-', '')} | {invoice.amount}/-
+                </p>
+              </div>
+
+              {/* Main White Card */}
+              <div style={{ 
+                background: 'white', 
+                margin: '15px', 
+                borderRadius: '40px', 
+                padding: '30px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                flex: 1
+              }}>
+                {/* Visual Dot */}
+                <div style={{ width: '12px', height: '12px', background: '#6b8341', borderRadius: '50%', marginBottom: '15px' }}></div>
+                
+                <h3 style={{ margin: '0 0 4px', fontWeight: '900', color: '#000', fontSize: '20px' }}>Scan For Pay</h3>
+                <p style={{ margin: '0 0 25px', color: '#666', fontSize: '13px', fontWeight: '500' }}>(share to your upi app)</p>
+
+                <div style={{ position: 'relative', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <QRCodeSVG 
+                    value={upiLink} 
+                    size={200}
+                    level="H"
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                  {/* Circular Branding Overlay */}
                   <div style={{
-                    width: '60px', // Larger branding for the high-res capture
-                    height: '60px',
-                    background: '#6b8341',
-                    borderRadius: '50%',
+                    position: 'absolute',
+                    inset: 0,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                    zIndex: 10
                   }}>
                     <div style={{
-                      width: '46px',
-                      height: '46px',
-                      background: 'white',
+                      width: '60px',
+                      height: '60px',
+                      background: '#6b8341',
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      overflow: 'hidden'
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                     }}>
-                      <img 
-                        src="/scscsc.jpg" 
-                        alt="logo" 
-                        style={{ 
-                          width: '190%', 
-                          height: '190%', 
-                          objectFit: 'cover',
-                          objectPosition: 'center 60%'
-                        }} 
-                      />
+                      <div style={{
+                        width: '46px',
+                        height: '46px',
+                        background: 'white',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden'
+                      }}>
+                        <img 
+                          src="/scscsc.jpg" 
+                          alt="logo" 
+                          style={{ 
+                            width: '190%', 
+                            height: '190%', 
+                            objectFit: 'cover',
+                            objectPosition: 'center 60%'
+                          }} 
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                <p style={{ margin: 0, fontWeight: '800', color: '#000', fontSize: '14px' }}>#{invoice.id.replace('INV-', '')}</p>
-                <p style={{ margin: 0, fontWeight: '700', color: '#666', fontSize: '18px' }}>₹{invoice.amount.toLocaleString()}</p>
+                {/* Secure Payment Brands (Row) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '30px', opacity: 0.8 }}>
+                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#007aff' }}>GPay</span>
+                   <span style={{ width: '1px', height: '12px', background: '#eee' }}></span>
+                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#5f259f' }}>PhonePe</span>
+                   <span style={{ width: '1px', height: '12px', background: '#eee' }}></span>
+                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#00baf2' }}>Paytm</span>
+                   <span style={{ width: '1px', height: '12px', background: '#eee' }}></span>
+                   <span style={{ fontSize: '10px', fontWeight: '900', color: '#000' }}>UPI</span>
+                </div>
+
+                <p style={{ margin: '15px 0 0', fontSize: '11px', color: '#888', fontWeight: '600' }}>mvee.in</p>
               </div>
             </div>
           </div>

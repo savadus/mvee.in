@@ -470,7 +470,7 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
 
         {/* UPI APP ICON */}
         <div style={{ marginTop: '15px' }}>
-          <img src="/UPI APP.png" alt="upi-apps" style={{ width: '160px', height: 'auto' }} />
+          <img src="/UPI APP.png" alt="upi-apps" style={{ width: '250px', height: 'auto' }} />
         </div>
 
         {/* Footer Area with mvee.in */}

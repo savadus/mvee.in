@@ -37,8 +37,22 @@ export default function Home() {
           <h1 className="font-bold" style={{ fontSize: '2.5rem', letterSpacing: '-0.03em' }}>Dashboard</h1>
           <p className="text-muted">Welcome back. Here's your studio's overview.</p>
         </div>
-        <Link href="/invoices/new" className="btn-primary" style={{ padding: '16px 32px', fontSize: '1rem', borderRadius: '18px' }}>
-          <Plus size={22} strokeWidth={2.5} /> Create Invoice
+        <Link 
+          href="/invoices/new" 
+          className="btn-primary" 
+          style={{ 
+            padding: '12px',
+            minWidth: '45px',
+            height: '45px',
+            borderRadius: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <Plus size={22} strokeWidth={3} />
+          <span className="hide-mobile" style={{ marginLeft: '4px', fontWeight: 'bold', paddingRight: '4px' }}>Create Invoice</span>
         </Link>
       </div>
 

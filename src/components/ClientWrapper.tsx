@@ -135,7 +135,7 @@ export default function ClientWrapper({
              alt="logo" 
              style={{ height: '34px', width: 'auto' }} 
            />
-           <div className="flex gap-3 items-center">
+           <div className="flex gap-6 items-center">
              <button onClick={toggleTheme} className="btn-outline" style={{ padding: '8px', background: 'transparent', border: 'none' }}>
                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
              </button>

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useStore } from '@/lib/store';
 import { LayoutDashboard, Users2, FileText, Settings as SettingsIcon, Sun, Moon, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 const dancingScript = Dancing_Script({ subsets: ['latin'] });
@@ -17,6 +18,7 @@ export default function ClientWrapper({
   children: React.ReactNode;
 }) {
   const { theme, toggleTheme, fetchData, logoUrl } = useStore();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [passcode, setPasscode] = useState('');
@@ -25,8 +27,11 @@ export default function ClientWrapper({
   useEffect(() => {
     setMounted(true);
     fetchData(); // Load data from Supabase
-    const savedUnlock = localStorage.getItem('admin_unlocked');
-    if (savedUnlock === 'true') setIsUnlocked(true);
+    
+    // Check session-based unlock
+    const sessionUnlock = sessionStorage.getItem('admin_unlocked');
+    if (sessionUnlock === 'true') setIsUnlocked(true);
+    
     document.documentElement.setAttribute('data-theme', theme);
 
     // Sync logo with background animation (4s total loop, 2s each color)
@@ -40,12 +45,15 @@ export default function ClientWrapper({
   const handleUnlock = (val: string) => {
     setPasscode(val);
     if (val === '6363') { // Updated secure passcode
-        localStorage.setItem('admin_unlocked', 'true');
+        sessionStorage.setItem('admin_unlocked', 'true');
         setIsUnlocked(true);
     }
   };
 
-  if (mounted && !isUnlocked) {
+  // Public Bypass: Clients should always see their shared invoices
+  const isPublicInvoice = pathname?.startsWith('/invoices/') && pathname !== '/invoices' && pathname !== '/invoices/new';
+
+  if (mounted && !isUnlocked && !isPublicInvoice) {
     return (
       <div className="unlock-overlay">
         <img 
@@ -115,7 +123,7 @@ export default function ClientWrapper({
               </button>
               <button 
                 onClick={() => {
-                  localStorage.removeItem('admin_unlocked');
+                  sessionStorage.removeItem('admin_unlocked');
                   setIsUnlocked(false);
                   setPasscode('');
                 }} 
@@ -145,7 +153,7 @@ export default function ClientWrapper({
              <Link href="/settings"><SettingsIcon size={20} /></Link>
              <button 
                 onClick={() => {
-                  localStorage.removeItem('admin_unlocked');
+                  sessionStorage.removeItem('admin_unlocked');
                   setIsUnlocked(false);
                   setPasscode('');
                 }} 

@@ -74,17 +74,48 @@ export const useStore = create<BillingState>()(
       logoUrl: '',
       settings: DEFAULT_SETTINGS,
 
-      setLogoUrl: (url) => set({ logoUrl: url }),
-      setSettings: (newSettings) => set((state) => ({ 
-        settings: { ...state.settings, ...newSettings } 
-      })),
+      setLogoUrl: async (url) => {
+        set({ logoUrl: url });
+        await supabase.from('settings').upsert({ id: 'studio', logo_url: url });
+      },
+      setSettings: async (newSettings) => {
+        set((state) => ({ 
+          settings: { ...state.settings, ...newSettings } 
+        }));
+        const current = get().settings;
+        const dbSettings = {
+          id: 'studio',
+          studio_name: current.studioName,
+          email: current.email,
+          phone: current.phone,
+          upi_id: current.upiId,
+          currency: current.currency,
+          auto_reminders: current.autoReminders
+        };
+        await supabase.from('settings').upsert(dbSettings);
+      },
 
       fetchData: async () => {
         try {
           const { data: clients } = await supabase.from('clients').select('*');
           const { data: rawInvoices } = await supabase.from('invoices').select('*');
+          const { data: settingsData } = await supabase.from('settings').select('*').single();
 
           if (clients) set({ clients });
+          
+          if (settingsData) {
+            set({
+              settings: {
+                studioName: settingsData.studio_name || DEFAULT_SETTINGS.studioName,
+                email: settingsData.email || DEFAULT_SETTINGS.email,
+                phone: settingsData.phone || DEFAULT_SETTINGS.phone,
+                upiId: settingsData.upi_id || DEFAULT_SETTINGS.upiId,
+                currency: settingsData.currency || DEFAULT_SETTINGS.currency,
+                autoReminders: settingsData.auto_reminders ?? DEFAULT_SETTINGS.autoReminders,
+              },
+              logoUrl: settingsData.logo_url || ''
+            });
+          }
           
           if (rawInvoices) {
             const invoices: Invoice[] = rawInvoices.map((inv: any) => ({

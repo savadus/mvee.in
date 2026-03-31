@@ -468,6 +468,11 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
           </div>
         </div>
 
+        {/* UPI APP ICON */}
+        <div style={{ marginTop: '15px' }}>
+          <img src="/UPI APP.png" alt="upi-apps" style={{ width: '160px', height: 'auto' }} />
+        </div>
+
         {/* Footer Area with mvee.in */}
         <div style={{ marginTop: 'auto', paddingBottom: '20px', textAlign: 'center' }}>
           <p style={{ margin: 0, color: '#666', fontSize: '13px', fontWeight: '600', letterSpacing: '0.5px' }}>mvee.in</p>

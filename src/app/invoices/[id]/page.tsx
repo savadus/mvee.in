@@ -376,93 +376,101 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
       </div>
     </div>
 
-    {/* HIDDEN PREMIUM SHARE CARD (Based on scang.png) */}
+    {/* HIDDEN PREMIUM SHARE CARD (Pure CSS Rebuild of scang.png) */}
     <div id="qr-share-card" style={{ 
       position: 'fixed', 
       left: '-9999px',
       width: '400px', 
       height: '564px',
-      background: `url('/scang.png')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      borderRadius: '20px',
-      overflow: 'hidden'
+      background: '#6b8341', 
+      padding: '20px 20px 0', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center',
+      fontFamily: "'Outfit', sans-serif"
     }}>
-      {/* Dynamic Header Overlay */}
+      {/* Top Header Capsule */}
       <div style={{ 
-        position: 'absolute',
-        top: '25px', 
-        left: '50%',
-        transform: 'translateX(-50%)',
         background: 'white', 
-        padding: '3px 30px', 
-        borderRadius: '8px', 
-        minWidth: '200px',
-        textAlign: 'center',
-        zIndex: 2
+        padding: '6px 40px', 
+        borderRadius: '4px', 
+        marginBottom: '20px',
+        textAlign: 'center'
       }}>
         <p style={{ margin: 0, fontWeight: '800', color: '#6b8341', fontSize: '20px', letterSpacing: '0.5px' }}>
           #{invoice.id.replace('INV-', '')} | {invoice.amount.toLocaleString()}/-
         </p>
       </div>
 
-      {/* Central QR Code (Aligned with scang.png hole) */}
+      {/* Main White Content Area */}
       <div style={{ 
-        position: 'absolute',
-        top: '50.5%',
-        left: '50%',
-        transform: 'translate(-50%, -46%)',
-        width: '256px',
-        height: '256px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'white',
-        zIndex: 1
+        background: 'white', 
+        flex: 1, 
+        width: '100%', 
+        borderTopLeftRadius: '30px', 
+        borderTopRightRadius: '30px', 
+        paddingTop: '25px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center'
       }}>
-        <QRCodeSVG value={upiLink} size={256} level="H" />
+        {/* Accents exactly like scang.png */}
+        <div style={{ width: '22px', height: '22px', background: '#6b8341', borderRadius: '50%', marginBottom: '15px' }} />
         
-        {/* Round Logo Branding */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10
-        }}>
+        <h3 style={{ margin: '0 0 2px', fontWeight: '800', fontSize: '22px', color: '#000' }}>Scan For Pay</h3>
+        <p style={{ margin: '0 0 25px', color: '#333', fontSize: '15px', fontWeight: '500' }}>(share to your upi app)</p>
+
+        {/* Central QR Code */}
+        <div style={{ position: 'relative', background: 'white', padding: '5px' }}>
+          <QRCodeSVG value={upiLink} size={250} level="H" />
+          
+          {/* Round Logo Branding Overlay */}
           <div style={{
-            width: '74px',
-            height: '74px',
-            background: '#6b8341',
-            borderRadius: '50%',
+            position: 'absolute',
+            inset: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+            zIndex: 10
           }}>
             <div style={{
-              width: '56px',
-              height: '56px',
-              background: 'white',
+              width: '74px',
+              height: '74px',
+              background: '#6b8341',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              overflow: 'hidden'
+              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
             }}>
-              <img 
-                src="/scscsc.jpg" 
-                alt="logo" 
-                style={{ 
-                  width: '190%', 
-                  height: '190%', 
-                  objectFit: 'cover',
-                  objectPosition: 'center 60%'
-                }} 
-              />
+              <div style={{
+                width: '56px',
+                height: '56px',
+                background: 'white',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }}>
+                <img 
+                  src="/scscsc.jpg" 
+                  alt="logo" 
+                  style={{ 
+                    width: '190%', 
+                    height: '190%', 
+                    objectFit: 'cover',
+                    objectPosition: 'center 60%'
+                  }} 
+                />
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer Area with mvee.in */}
+        <div style={{ marginTop: 'auto', paddingBottom: '20px', textAlign: 'center' }}>
+          <p style={{ margin: 0, color: '#666', fontSize: '13px', fontWeight: '600', letterSpacing: '0.5px' }}>mvee.in</p>
         </div>
       </div>
     </div>

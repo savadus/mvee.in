@@ -135,12 +135,14 @@ export default function ClientWrapper({
              alt="logo" 
              style={{ height: '34px', width: 'auto' }} 
            />
-           <div className="flex gap-4 items-center">
+           <div className="flex gap-3 items-center">
              <button onClick={toggleTheme} className="btn-outline" style={{ padding: '8px', background: 'transparent', border: 'none' }}>
                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
              </button>
              <Link href="/"><LayoutDashboard size={20} /></Link>
+             <Link href="/clients"><Users2 size={20} /></Link>
              <Link href="/invoices"><FileText size={20} /></Link>
+             <Link href="/settings"><SettingsIcon size={20} /></Link>
              <button 
                 onClick={() => {
                   localStorage.removeItem('admin_unlocked');

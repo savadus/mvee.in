@@ -62,14 +62,15 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
   };
 
   const handleShare = async () => {
-    const qrElement = document.getElementById('qr-code-to-share');
+    const qrElement = document.getElementById('qr-share-card');
     if (!qrElement || !invoice) return;
 
     setIsGenerating(true);
-    const text = `Invoice from mvee.cuts\nInvoice No: #${invoice.id.replace('INV-', '')}\nTotal: ₹${invoice.amount}\nLink: ${window.location.href}`;
+    const fileName = `mvee_qr_${invoice.id.replace('INV-', '')}.jpg`;
+    const shareText = `Invoice from mvee.cuts\nInvoice No: #${invoice.id.replace('INV-', '')}\nTotal: ₹${invoice.amount}\nLink: ${window.location.origin}/invoices/${invoice.id}`;
 
     try {
-      if (navigator.share) {
+      if (typeof navigator !== 'undefined' && navigator.share) {
         const canvas = await html2canvas(qrElement, { 
           scale: 4, 
           backgroundColor: '#ffffff',
@@ -79,31 +80,27 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
         const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
         
         if (blob) {
-          const file = new File([blob], `payment_qr_${invoice.id}.jpg`, { type: 'image/jpeg' });
-          
+          const file = new File([blob], fileName, { type: 'image/jpeg' });
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              title: `Payment QR for Invoice #${invoice.id.replace('INV-', '')}`,
-              text: text
-            });
-            return;
+             await navigator.share({
+               title: `Invoice #${invoice.id}`,
+               text: shareText,
+               files: [file],
+             });
+             return;
           }
         }
         
-        // Fallback share text if files aren't supported but share is
         await navigator.share({
-           title: 'Invoice Link',
-           text: text
+           title: 'Invoice Details',
+           text: shareText
         });
       } else {
-        // Fallback for desktop: open WhatsApp link
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
       }
-    } catch (err) {
-      console.warn('Share failed:', err);
-      // Final fallback
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    } catch (error) {
+      console.warn('Share error:', error);
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
     } finally {
       setIsGenerating(false);
     }
@@ -375,9 +372,100 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
         <div style={{ borderTop: '1px solid #eee', marginTop: 'auto', position: 'relative', overflow: 'hidden' }}>
           <img src="/contact.png" alt="footer" style={{ width: '100%', height: 'auto', display: 'block' }} />
         </div>
+        </div>
+      </div>
+    </div>
+
+    {/* HIDDEN PREMIUM SHARE CARD (Based on scang.png) */}
+    <div id="qr-share-card" style={{ 
+      position: 'fixed', 
+      left: '-9999px',
+      width: '400px', 
+      height: '564px',
+      background: `url('/scang.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      borderRadius: '20px',
+      overflow: 'hidden'
+    }}>
+      {/* Dynamic Header Overlay */}
+      <div style={{ 
+        position: 'absolute',
+        top: '25px', 
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'white', 
+        padding: '3px 30px', 
+        borderRadius: '8px', 
+        minWidth: '200px',
+        textAlign: 'center',
+        zIndex: 2
+      }}>
+        <p style={{ margin: 0, fontWeight: '800', color: '#6b8341', fontSize: '20px', letterSpacing: '0.5px' }}>
+          #{invoice.id.replace('INV-', '')} | {invoice.amount.toLocaleString()}/-
+        </p>
+      </div>
+
+      {/* Central QR Code (Aligned with scang.png hole) */}
+      <div style={{ 
+        position: 'absolute',
+        top: '50.5%',
+        left: '50%',
+        transform: 'translate(-50%, -46%)',
+        width: '256px',
+        height: '256px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'white',
+        zIndex: 1
+      }}>
+        <QRCodeSVG value={upiLink} size={256} level="H" />
+        
+        {/* Round Logo Branding */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10
+        }}>
+          <div style={{
+            width: '74px',
+            height: '74px',
+            background: '#6b8341',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{
+              width: '56px',
+              height: '56px',
+              background: 'white',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}>
+              <img 
+                src="/scscsc.jpg" 
+                alt="logo" 
+                style={{ 
+                  width: '190%', 
+                  height: '190%', 
+                  objectFit: 'cover',
+                  objectPosition: 'center 60%'
+                }} 
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 );
 }

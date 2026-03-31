@@ -213,7 +213,15 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
           transition: 'transform 0.2s ease-out'
         }}>
           {/* A4 INVOICE PAGE */}
-          <div className="a4-page" id="invoice-printable" style={{ color: COLORS.TEXT_DARK, fontSize: '14px', fontFamily: "'Outfit', sans-serif", margin: 0 }}>
+          <div className="a4-page" id="invoice-printable" style={{ 
+            color: COLORS.TEXT_DARK, 
+            fontSize: '14px', 
+            fontFamily: "'Outfit', sans-serif", 
+            margin: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '297mm'
+          }}>
         {/* Header Image Match */}
         <div style={{ position: 'relative', width: '100%' }}>
           <img src="/logo head.png" alt="header" style={{ width: '100%', height: 'auto', display: 'block' }} />

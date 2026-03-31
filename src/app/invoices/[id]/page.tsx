@@ -70,7 +70,12 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
 
     try {
       if (navigator.share) {
-        const canvas = await html2canvas(qrElement, { scale: 3, backgroundColor: '#ffffff' });
+        const canvas = await html2canvas(qrElement, { 
+          scale: 3, 
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false
+        });
         const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
         
         if (blob) {
@@ -290,19 +295,13 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
         <div className="flex justify-between items-start" style={{ padding: '20px 60px' }}>
           <div>
             <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
-            <div id="qr-code-to-share" style={{ position: 'relative', border: '2px solid #000', padding: '6px', borderRadius: '4px', display: 'inline-block' }}>
+            <div id="qr-code-to-share" style={{ position: 'relative', border: '2px solid #000', padding: '6px', borderRadius: '4px', display: 'inline-block', background: 'white' }}>
               <QRCodeSVG 
                 value={upiLink} 
                 size={110}
-                imageSettings={{
-                  src: "/scscsc.jpg",
-                  x: undefined,
-                  y: undefined,
-                  height: 30,
-                  width: 30,
-                  excavate: true,
-                }}
+                level="H"
               />
+              {/* Custom Centered Branding Overlay (Matches Image 2) */}
               <div style={{
                 position: 'absolute',
                 top: '50%',
@@ -310,18 +309,34 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
                 transform: 'translate(-50%, -50%)',
                 width: '32px',
                 height: '32px',
-                background: 'white',
-                borderRadius: '50%',
+                background: '#6b8341', // Business Green
+                borderRadius: '4px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                overflow: 'hidden'
+                zIndex: 10
               }}>
-                <img 
-                  src="/scscsc.jpg" 
-                  alt="qr-center" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-                />
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  background: 'white',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden'
+                }}>
+                  <img 
+                    src="/scscsc.jpg" 
+                    alt="qr-logo" 
+                    style={{ 
+                      width: '190%', 
+                      height: '190%', 
+                      objectFit: 'cover',
+                      objectPosition: 'center 60%' // Hide 'mvee.' text
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>

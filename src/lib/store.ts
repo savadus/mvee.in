@@ -159,7 +159,22 @@ export const useStore = create<BillingState>()(
       },
 
       addInvoice: async (invoice) => {
-        const id = `INV-${Date.now().toString().slice(-6)}`;
+        const { invoices } = get();
+        
+        // Find existing numeric IDs
+        const existingNumbers = invoices
+          .map(inv => {
+            const match = inv.id.match(/\d+/);
+            return match ? parseInt(match[0], 10) : 0;
+          })
+          .filter(num => !isNaN(num));
+
+        const maxNum = existingNumbers.length > 0 ? Math.max(...existingNumbers) : 785;
+        const nextNum = Math.max(786, maxNum + 1);
+        
+        // Format as 5-digit sequence (e.g., 00786)
+        const id = nextNum.toString().padStart(5, '0');
+        
         const newInvoice: Invoice = { ...invoice, id };
         
         set((state) => ({ invoices: [...state.invoices, newInvoice] }));

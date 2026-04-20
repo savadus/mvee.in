@@ -20,30 +20,18 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleDownload = async (type: 'pdf' | 'jpeg') => {
-    const element = document.getElementById('invoice-printable');
+    // Specifically target the hidden 1:1 version for a perfect render
+    const element = document.getElementById('invoice-download-version');
     if (!element) return;
 
     setIsGenerating(true);
     try {
-      // Create a high-res capture using html2canvas
       const canvas = await html2canvas(element, {
-        scale: 3, // High DPI for professional prints
+        scale: 3, // High resolution
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        // Important: Force the renderer to think it's A4 width to keep positions perfect
-        windowWidth: 794, // 210mm in pixels at 96DPI
-        onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.getElementById('invoice-printable');
-          if (clonedElement) {
-            clonedElement.style.transform = 'none';
-            clonedElement.style.margin = '0';
-            clonedElement.style.padding = '0';
-            clonedElement.style.width = '210mm';
-            clonedElement.style.minHeight = '297mm';
-            clonedElement.style.boxShadow = 'none';
-          }
-        }
+        // No windowWidth/onclone needed because we target a fixed 210mm child
       });
 
       const fileName = `mvee-invoice-${invoice?.id.replace('INV-', '')}`;
@@ -388,106 +376,122 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
       </div>
     </div>
 
-    {/* HIDDEN PREMIUM SHARE CARD (Pure CSS Rebuild of scang.png) */}
-    <div id="qr-share-card" style={{ 
-      position: 'fixed', 
-      left: '-9999px',
-      width: '400px', 
-      height: '564px',
-      background: '#6b8341', 
-      padding: '20px 20px 0', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center',
-      fontFamily: "'Outfit', sans-serif"
-    }}>
-      {/* Top Header Capsule */}
-      <div style={{ 
-        background: 'white', 
-        padding: '6px 40px', 
-        borderRadius: '4px', 
-        marginBottom: '20px',
-        textAlign: 'center'
-      }}>
-        <p style={{ margin: 0, fontWeight: '800', color: '#6b8341', fontSize: '20px', letterSpacing: '0.5px' }}>
-          #{invoice.id.replace('INV-', '')} | {invoice.amount.toLocaleString()}/-
-        </p>
-      </div>
+    </div>
 
-      {/* Main White Content Area */}
-      <div style={{ 
-        background: 'white', 
-        flex: 1, 
-        width: '100%', 
-        borderTopLeftRadius: '30px', 
-        borderTopRightRadius: '30px', 
-        paddingTop: '25px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center'
+    {/* HIDDEN 1:1 VERSION FOR DOWNLOAD - NEVER SCALED */}
+    <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+      <div id="invoice-download-version" style={{ 
+        width: '210mm', 
+        minHeight: '297mm', 
+        background: 'white',
+        color: COLORS.TEXT_DARK,
+        fontSize: '14px',
+        fontFamily: "'Outfit', sans-serif",
+        display: 'flex',
+        flexDirection: 'column'
       }}>
-        {/* Accents exactly like scang.png */}
-        <div style={{ width: '22px', height: '22px', background: '#6b8341', borderRadius: '50%', marginBottom: '15px' }} />
-        
-        <h3 style={{ margin: '0 0 2px', fontWeight: '800', fontSize: '22px', color: '#000' }}>Scan For Pay</h3>
-        <p style={{ margin: '0 0 25px', color: '#333', fontSize: '15px', fontWeight: '500' }}>(share to your upi app)</p>
+        {/* Header */}
+        <div style={{ position: 'relative', width: '100%' }}>
+          <img src="/logo head.png" alt="header" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        </div>
 
-        {/* Central QR Code */}
-        <div style={{ position: 'relative', background: 'white', padding: '5px' }}>
-          <QRCodeSVG value={upiLink} size={250} level="H" />
-          
-          {/* Round Logo Branding Overlay */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10
-          }}>
-            <div style={{
-              width: '74px',
-              height: '74px',
-              background: '#6b8341',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-            }}>
-              <div style={{
-                width: '56px',
-                height: '56px',
-                background: 'white',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden'
-              }}>
-                <img 
-                  src="/scscsc.jpg" 
-                  alt="logo" 
-                  style={{ 
-                    width: '190%', 
-                    height: '190%', 
-                    objectFit: 'cover',
-                    objectPosition: 'center 60%'
-                  }} 
-                />
+        {/* Client & Info */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '30px 60px 20px', alignItems: 'flex-start' }}>
+          <div>
+            <p style={{ fontSize: '18px', color: COLORS.TEXT_MUTED, margin: '0 0 5px' }}>Invoice To:</p>
+            <h2 style={{ fontSize: '20px', fontWeight: '800', color: COLORS.GREEN, margin: '0 0 25px' }}>{client?.name || 'CLIENT NAME'}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Phone size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
+                <span style={{ fontWeight: '500' }}>{client?.phone || '..............................'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Mail size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
+                <span style={{ fontWeight: '500' }}>{client?.email || '..............................'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'right' }}>
+            {logoUrl && <img src={logoUrl} alt="logo" style={{ maxHeight: '60px', marginBottom: '8px' }} />}
+            <h2 style={{ fontSize: '24px', fontWeight: '900', margin: '0 0 5px' }}>mvee.cuts</h2>
+            <p style={{ fontSize: '13px', fontWeight: '300' }}>INVOICE NO: #{invoice.id.replace('INV-', '')}</p>
+            <div style={{ marginTop: '25px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '40px' }}>
+                <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Date</span>
+                <span style={{ fontWeight: '700' }}>{invoice.date}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '40px' }}>
+                <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Due</span>
+                <span style={{ fontWeight: '700' }}>{invoice.dueDate}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* UPI APP ICON */}
-        <div style={{ marginTop: '15px' }}>
-          <img src="/UPI APP.png" alt="upi-apps" style={{ width: '330px', height: 'auto' }} />
+        {/* Table */}
+        <div style={{ padding: '20px 60px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: COLORS.GREEN, color: 'white' }}>
+                <th style={{ padding: '15px 25px', textAlign: 'left' }}>Item description</th>
+                <th style={{ padding: '15px 20px', background: '#3b4321' }}>Quantity</th>
+                <th style={{ padding: '15px 20px' }}>Unite Price</th>
+                <th style={{ padding: '15px 20px', background: '#3b4321' }}>Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoice.items.map((item, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '20px 25px' }}>
+                    <p style={{ fontWeight: '700', margin: 0 }}>{item.description}</p>
+                  </td>
+                  <td style={{ textAlign: 'center', background: '#f8f8f8', fontWeight: '700' }}>{String(item.quantity).padStart(2, '0')}</td>
+                  <td style={{ textAlign: 'center', fontWeight: '700' }}>₹{item.price}</td>
+                  <td style={{ textAlign: 'center', background: '#f8f8f8', fontWeight: '700' }}>₹{item.quantity * item.price}</td>
+                </tr>
+              ))}
+              {[...Array(Math.max(0, 4 - invoice.items.length))].map((_, i) => (
+                <tr key={i} style={{ height: '80px', borderBottom: '1px solid #eee' }}>
+                   <td></td><td style={{ background: '#f8f8f8' }}></td><td></td><td style={{ background: '#f8f8f8' }}></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        {/* Footer Area with mvee.in */}
-        <div style={{ marginTop: 'auto', paddingBottom: '20px', textAlign: 'center' }}>
-          <p style={{ margin: 0, color: '#666', fontSize: '13px', fontWeight: '600', letterSpacing: '0.5px' }}>mvee.in</p>
+        {/* Summary */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 60px' }}>
+          <div>
+            <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
+            <div style={{ border: '1px solid #eee', padding: '10px', borderRadius: '12px', background: 'white', display: 'inline-block', position: 'relative' }}>
+              <QRCodeSVG value={upiLink} size={130} level="H" />
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '40px', height: '40px', background: '#6b8341', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '30px', height: '30px', background: 'white', borderRadius: '50%', overflow: 'hidden' }}>
+                   <img src="/scscsc.jpg" style={{ width: '190%', height: '190%', objectFit: 'cover', objectPosition: 'center 60%' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{ width: '320px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+               <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Sub Total</span>
+               <span style={{ fontWeight: '700' }}>₹{(invoice.amount + (invoice.discount || 0)).toLocaleString()}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+               <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Discount</span>
+               <span style={{ fontWeight: '700' }}>₹{(invoice.discount || 0).toLocaleString()}</span>
+            </div>
+            <div style={{ display: 'flex', height: '45px' }}>
+              <div style={{ flex: 1, background: COLORS.GREEN, color: 'white', display: 'flex', alignItems: 'center', paddingLeft: '20px', fontWeight: '800', fontSize: '18px' }}>Grand Total</div>
+              <div style={{ width: '120px', background: COLORS.BLUE, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '18px' }}>₹{invoice.amount.toLocaleString()}/-</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ marginTop: 'auto' }}>
+          <img src="/contact.png" alt="footer" style={{ width: '100%', height: 'auto', display: 'block' }} />
         </div>
       </div>
     </div>

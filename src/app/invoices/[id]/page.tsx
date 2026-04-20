@@ -24,14 +24,29 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
     const element = document.getElementById('invoice-download-version');
     if (!element) return;
 
+    // Ensure all fonts are fully loaded before capturing
+    await document.fonts.ready;
+    
+    // Tiny delay to ensure layout has settled in the hidden container
+    await new Promise(resolve => setTimeout(resolve, 300));
+
     setIsGenerating(true);
     try {
       const canvas = await html2canvas(element, {
-        scale: 3, // High resolution
+        scale: 4, // Higher scale for extreme crispness
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        // No windowWidth/onclone needed because we target a fixed 210mm child
+        imageTimeout: 5000,
+        // Match browser rendering as closely as possible
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.getElementById('invoice-download-version');
+          if (el) {
+             el.style.fontFamily = "'Outfit', sans-serif";
+             el.style.textRendering = "optimizeLegibility";
+             el.style.webkitFontSmoothing = "antialiased";
+          }
+        }
       });
 
       const fileName = `mvee-invoice-${invoice?.id.replace('INV-', '')}`;

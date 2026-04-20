@@ -25,12 +25,25 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
 
     setIsGenerating(true);
     try {
+      // Create a high-res capture using html2canvas
       const canvas = await html2canvas(element, {
-        scale: 3, // Very high resolution for professional look
-        useCORS: true, 
+        scale: 3, // High DPI for professional prints
+        useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: 800, // Fixed width for A4 consistency
+        // Important: Force the renderer to think it's A4 width to keep positions perfect
+        windowWidth: 794, // 210mm in pixels at 96DPI
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('invoice-printable');
+          if (clonedElement) {
+            clonedElement.style.transform = 'none';
+            clonedElement.style.margin = '0';
+            clonedElement.style.padding = '0';
+            clonedElement.style.width = '210mm';
+            clonedElement.style.minHeight = '297mm';
+            clonedElement.style.boxShadow = 'none';
+          }
+        }
       });
 
       const fileName = `mvee-invoice-${invoice?.id.replace('INV-', '')}`;
@@ -38,24 +51,23 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
       if (type === 'jpeg') {
         const link = document.createElement('a');
         link.download = `${fileName}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        link.href = canvas.toDataURL('image/jpeg', 0.98);
         link.click();
       } else {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'mm',
-          format: 'a4'
+          format: 'a4',
+          compress: true
         });
         
-        const imgWidth = 210; // A4 width in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
         pdf.save(`${fileName}.pdf`);
       }
     } catch (err) {
       console.error('Download error:', err);
+      alert('Failed to generate file. Please try again.');
     } finally {
       setIsGenerating(false);
     }

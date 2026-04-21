@@ -33,11 +33,12 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
     setIsGenerating(true);
     try {
       const canvas = await html2canvas(element, {
-        scale: 4, // Higher scale for extreme crispness
+        scale: 2, // More stable scale
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
         imageTimeout: 5000,
+        windowWidth: 1200, // Wider viewport for better font calculation
         // Match browser rendering as closely as possible
         onclone: (clonedDoc) => {
           const el = clonedDoc.getElementById('invoice-download-version');
@@ -161,29 +162,23 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
     TEXT_MUTED: '#666666'
   };
 
-  // Reusable Component for 100% consistency
   const InvoiceContent = ({ isDownload = false }) => {
-    // Standard A4 pixel conversions (96dpi)
-    const width = isDownload ? 794 : 794; 
-    const height = isDownload ? 1123 : 1123;
-
     const containerStyle: React.CSSProperties = {
       color: COLORS.TEXT_DARK, 
-      fontSize: '15px', 
+      fontSize: '14px', 
       fontFamily: "'Outfit', sans-serif", 
       margin: 0,
       display: 'flex',
       flexDirection: 'column',
-      width: isDownload ? '793px' : '210mm',
-      minHeight: isDownload ? '1122px' : '297mm',
+      width: isDownload ? '794px' : '210mm',
+      minHeight: isDownload ? '1123px' : '297mm',
       background: 'white',
       boxShadow: isDownload ? 'none' : '0 0 20px rgba(0,0,0,0.1)',
       position: 'relative',
-      letterSpacing: '0px',
-      fontVariant: 'normal',
-      fontKerning: 'none',
-      textRendering: 'optimizeLegibility',
-      lineHeight: '1.2'
+      letterSpacing: '0.01em',
+      lineHeight: '1.4',
+      textRendering: 'geometricPrecision',
+      WebkitFontSmoothing: 'antialiased'
     };
 
     return (
@@ -202,7 +197,7 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
         }}>
           <div>
             <p style={{ fontSize: '18px', color: COLORS.TEXT_MUTED, margin: '0 0 5px' }}>Invoice To:</p>
-            <h2 style={{ fontSize: '22px', fontWeight: '800', color: COLORS.GREEN, margin: '0 0 25px' }}>{client?.name || 'MD ABDULLAH'}</h2>
+            <h2 style={{ fontSize: '20px', fontWeight: '800', color: COLORS.GREEN, margin: '0 0 25px' }}>{client?.name || 'MD ABDULLAH'}</h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -220,8 +215,8 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
             {logoUrl && (
               <img src={logoUrl} alt="studio-logo" style={{ maxHeight: '60px', width: 'auto', marginBottom: '8px', marginLeft: 'auto' }} />
             )}
-            <h2 style={{ fontSize: '28px', fontWeight: '900', margin: '0 0 5px', letterSpacing: '0.5px' }}>mvee.cuts</h2>
-            <p style={{ fontSize: '14px', fontWeight: '400', color: COLORS.TEXT_DARK, margin: 0 }}>INVOICE NO: #{invoice.id.replace('INV-', '')}</p>
+            <h2 style={{ fontSize: '24px', fontWeight: '900', margin: '0 0 5px', letterSpacing: '0.5px' }}>mvee.cuts</h2>
+            <p style={{ fontSize: '13px', fontWeight: '400', color: COLORS.TEXT_DARK, margin: 0 }}>INVOICE NO: #{invoice.id.replace('INV-', '')}</p>
             
             <div style={{ marginTop: '25px', display: 'grid', gap: '8px', justifyItems: 'end' }}>
               <div style={{ display: 'flex', gap: '40px' }}>

@@ -162,11 +162,13 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
     TEXT_MUTED: '#666666'
   };
 
+  // Reusable Component for 100% consistency
   const InvoiceContent = ({ isDownload = false }) => {
     const containerStyle: React.CSSProperties = {
       color: COLORS.TEXT_DARK, 
       fontSize: '14px', 
-      fontFamily: "'Outfit', sans-serif", 
+      // Use rock-solid system fonts for download to guarantee legibility
+      fontFamily: isDownload ? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' : "'Outfit', sans-serif", 
       margin: 0,
       display: 'flex',
       flexDirection: 'column',
@@ -175,10 +177,10 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
       background: 'white',
       boxShadow: isDownload ? 'none' : '0 0 20px rgba(0,0,0,0.1)',
       position: 'relative',
-      letterSpacing: '0.01em',
+      letterSpacing: '0px',
       lineHeight: '1.4',
-      textRendering: 'geometricPrecision',
-      WebkitFontSmoothing: 'antialiased'
+      WebkitFontSmoothing: 'antialiased',
+      fontVariantLigatures: 'none'
     };
 
     return (
@@ -189,15 +191,10 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
         </div>
 
         {/* Client & Info */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1fr 1fr', 
-          padding: '30px 60px 20px',
-          alignItems: 'start'
-        }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '30px 60px 20px', alignItems: 'flex-start' }}>
           <div>
             <p style={{ fontSize: '18px', color: COLORS.TEXT_MUTED, margin: '0 0 5px' }}>Invoice To:</p>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', color: COLORS.GREEN, margin: '0 0 25px' }}>{client?.name || 'MD ABDULLAH'}</h2>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: COLORS.GREEN, margin: '0 0 25px' }}>{client?.name || 'MD ABDULLAH'}</h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -215,53 +212,56 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
             {logoUrl && (
               <img src={logoUrl} alt="studio-logo" style={{ maxHeight: '60px', width: 'auto', marginBottom: '8px', marginLeft: 'auto' }} />
             )}
-            <h2 style={{ fontSize: '24px', fontWeight: '900', margin: '0 0 5px', letterSpacing: '0.5px' }}>mvee.cuts</h2>
+            <h2 style={{ fontSize: '24px', fontWeight: '900', margin: '0 0 5px' }}>mvee.cuts</h2>
             <p style={{ fontSize: '13px', fontWeight: '400', color: COLORS.TEXT_DARK, margin: 0 }}>INVOICE NO: #{invoice.id.replace('INV-', '')}</p>
             
-            <div style={{ marginTop: '25px', display: 'grid', gap: '8px', justifyItems: 'end' }}>
-              <div style={{ display: 'flex', gap: '40px' }}>
+            <div style={{ marginTop: '25px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '40px' }}>
                 <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Date</span>
-                <span style={{ fontWeight: '700', width: '100px', textAlign: 'right' }}>{invoice.date}</span>
+                <span style={{ fontWeight: '700', width: '90px', textAlign: 'right' }}>{invoice.date}</span>
               </div>
-              <div style={{ display: 'flex', gap: '40px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '40px' }}>
                 <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Due</span>
-                <span style={{ fontWeight: '700', width: '100px', textAlign: 'right' }}>{invoice.dueDate}</span>
+                <span style={{ fontWeight: '700', width: '90px', textAlign: 'right' }}>{invoice.dueDate}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Item Table */}
+        {/* Item Table - Back to standard table for capture stability */}
         <div style={{ padding: '20px 60px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) 90px 110px 110px', background: COLORS.GREEN, color: 'white' }}>
-            <div style={{ padding: '15px 25px', textAlign: 'left', fontWeight: '700' }}>Item description</div>
-            <div style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700', background: '#3b4321' }}>Quantity</div>
-            <div style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700' }}>Unite Price</div>
-            <div style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700', background: '#3b4321' }}>Total Price</div>
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {invoice.items.map((item, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) 90px 110px 110px', borderBottom: '1px solid #eee' }}>
-                <div style={{ padding: '20px 25px', fontWeight: '700', fontSize: '15px' }}>{item.description}</div>
-                <div style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>{String(item.quantity).padStart(2, '0')}</div>
-                <div style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700' }}>₹{item.price}</div>
-                <div style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>₹{item.quantity * item.price}</div>
-              </div>
-            ))}
-            {[...Array(Math.max(0, 4 - invoice.items.length))].map((_, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) 90px 110px 110px', height: '80px', borderBottom: '1px solid #eee' }}>
-                <div />
-                <div style={{ background: '#f8f8f8' }} />
-                <div />
-                <div style={{ background: '#f8f8f8' }} />
-              </div>
-            ))}
-          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '4px', overflow: 'hidden' }}>
+            <thead>
+              <tr style={{ color: 'white', background: COLORS.GREEN }}>
+                <th style={{ padding: '15px 25px', textAlign: 'left', fontWeight: '700' }}>Item description</th>
+                <th style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700', background: '#3b4321', width: '90px' }}>Quantity</th>
+                <th style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700', width: '110px' }}>Unite Price</th>
+                <th style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700', background: '#3b4321', width: '110px' }}>Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoice.items.map((item, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '20px 25px', fontWeight: '700', fontSize: '15px' }}>{item.description}</td>
+                  <td style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>{String(item.quantity).padStart(2, '0')}</td>
+                  <td style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700' }}>₹{item.price}</td>
+                  <td style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>₹{item.quantity * item.price}</td>
+                </tr>
+              ))}
+              {[...Array(Math.max(0, 4 - invoice.items.length))].map((_, i) => (
+                <tr key={i} style={{ height: '80px', borderBottom: '1px solid #eee' }}>
+                  <td></td>
+                  <td style={{ background: '#f8f8f8' }}></td>
+                  <td></td>
+                  <td style={{ background: '#f8f8f8' }}></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Summary Section */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', padding: '20px 60px', alignItems: 'end', marginTop: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 60px', alignItems: 'flex-end', marginTop: '10px' }}>
           <div>
             <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
             <div style={{ position: 'relative', border: '1px solid #eee', padding: '15px', borderRadius: '12px', display: 'inline-block', background: 'white' }}>
@@ -274,7 +274,7 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
             </div>
           </div>
 
-          <div>
+          <div style={{ width: '340px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', padding: '0 10px' }}>
               <span style={{ fontWeight: '600', color: COLORS.TEXT_MUTED }}>Sub Total</span>
               <span style={{ fontWeight: '700' }}>₹{(invoice.amount + (invoice.discount || 0)).toLocaleString()}</span>
@@ -284,8 +284,8 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
               <span style={{ fontWeight: '700' }}>₹{(invoice.discount || 0).toLocaleString()}</span>
             </div>
             <div style={{ display: 'flex', borderRadius: '4px', overflow: 'hidden', height: '50px' }}>
-              <div style={{ flex: 1, background: COLORS.GREEN, color: 'white', display: 'flex', alignItems: 'center', paddingLeft: '20px', fontWeight: '800', fontSize: '20px' }}>Grand Total</div>
-              <div style={{ width: '130px', background: COLORS.BLUE, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '20px' }}>₹{invoice.amount.toLocaleString()}/-</div>
+              <div style={{ flex: 1, background: COLORS.GREEN, color: 'white', display: 'flex', alignItems: 'center', paddingLeft: '20px', fontWeight: '800', fontSize: '18px' }}>Grand Total</div>
+              <div style={{ width: '130px', background: COLORS.BLUE, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '18px' }}>₹{invoice.amount.toLocaleString()}/-</div>
             </div>
           </div>
         </div>

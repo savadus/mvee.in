@@ -162,132 +162,146 @@ export default function InvoiceDetail({ params }: { params: Promise<{ id: string
   };
 
   // Reusable Component for 100% consistency
-  const InvoiceContent = ({ isDownload = false }) => (
-    <div className="a4-page" style={{ 
+  const InvoiceContent = ({ isDownload = false }) => {
+    // Standard A4 pixel conversions (96dpi)
+    const width = isDownload ? 794 : 794; 
+    const height = isDownload ? 1123 : 1123;
+
+    const containerStyle: React.CSSProperties = {
       color: COLORS.TEXT_DARK, 
-      fontSize: '14px', 
+      fontSize: '15px', 
       fontFamily: "'Outfit', sans-serif", 
       margin: 0,
       display: 'flex',
       flexDirection: 'column',
-      width: '210mm',
-      minHeight: '297mm',
+      width: isDownload ? '793px' : '210mm',
+      minHeight: isDownload ? '1122px' : '297mm',
       background: 'white',
       boxShadow: isDownload ? 'none' : '0 0 20px rgba(0,0,0,0.1)',
-      position: 'relative'
-    }}>
-      {/* Header Image */}
-      <div style={{ position: 'relative', width: '100%' }}>
-        <img src="/logo head.png" alt="header" style={{ width: '100%', height: 'auto', display: 'block' }} />
-      </div>
+      position: 'relative',
+      letterSpacing: '0px',
+      fontVariant: 'normal',
+      fontKerning: 'none',
+      textRendering: 'optimizeLegibility',
+      lineHeight: '1.2'
+    };
 
-      {/* Client & Info */}
-      <div className="flex justify-between items-start" style={{ padding: '30px 60px 20px' }}>
-        <div>
-          <p style={{ fontSize: '18px', color: COLORS.TEXT_MUTED, margin: '0 0 5px' }}>Invoice To:</p>
-          <h2 style={{ fontSize: '20px', fontWeight: '800', color: COLORS.GREEN, margin: '0 0 25px' }}>{client?.name || 'MD ABDULLAH'}</h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Phone size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
-              <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.phone || '..............................'}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Mail size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
-              <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.email || '..............................'}</span>
-            </div>
-          </div>
+    return (
+      <div className="a4-page" style={containerStyle}>
+        {/* Header Image */}
+        <div style={{ position: 'relative', width: '100%' }}>
+          <img src="/logo head.png" alt="header" style={{ width: '100%', height: 'auto', display: 'block' }} />
         </div>
 
-        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-          {logoUrl && (
-            <img src={logoUrl} alt="studio-logo" style={{ maxHeight: '60px', width: 'auto', marginBottom: '8px' }} />
-          )}
-          <h2 style={{ fontSize: '24px', fontWeight: '900', margin: '0 0 5px', letterSpacing: '0.5px' }}>mvee.cuts</h2>
-          <p style={{ fontSize: '13px', fontWeight: '300', color: COLORS.TEXT_DARK, margin: 0 }}>INVOICE NO: #{invoice.id.replace('INV-', '')}</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '25px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '40px' }}>
-              <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Date</span>
-              <span style={{ fontWeight: '700' }}>{invoice.date}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '40px' }}>
-              <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Due</span>
-              <span style={{ fontWeight: '700' }}>{invoice.dueDate}</span>
+        {/* Client & Info */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1fr 1fr', 
+          padding: '30px 60px 20px',
+          alignItems: 'start'
+        }}>
+          <div>
+            <p style={{ fontSize: '18px', color: COLORS.TEXT_MUTED, margin: '0 0 5px' }}>Invoice To:</p>
+            <h2 style={{ fontSize: '22px', fontWeight: '800', color: COLORS.GREEN, margin: '0 0 25px' }}>{client?.name || 'MD ABDULLAH'}</h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Phone size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
+                <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.phone || '..............................'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Mail size={14} fill={COLORS.BLUE} color={COLORS.BLUE} />
+                <span style={{ color: COLORS.TEXT_DARK, fontWeight: '500' }}>{client?.email || '..............................'}</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Item Table */}
-      <div style={{ padding: '20px 60px' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ color: 'white', background: COLORS.GREEN }}>
-              <th style={{ padding: '15px 25px', textAlign: 'left', fontWeight: '700' }}>Item description</th>
-              <th style={{ padding: '15px 20px', textAlign: 'center', fontWeight: '700', background: '#3b4321' }}>Quantity</th>
-              <th style={{ padding: '15px 20px', textAlign: 'center', fontWeight: '700' }}>Unite Price</th>
-              <th style={{ padding: '15px 20px', textAlign: 'center', fontWeight: '700', background: '#3b4321' }}>Total Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoice.items.map((item, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: '20px 25px' }}>
-                  <p style={{ fontWeight: '700', margin: '0', fontSize: '15px' }}>{item.description}</p>
-                </td>
-                <td style={{ textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>{String(item.quantity).padStart(2, '0')}</td>
-                <td style={{ textAlign: 'center', fontWeight: '700' }}>₹{item.price}</td>
-                <td style={{ textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>₹{item.quantity * item.price}</td>
-              </tr>
-            ))}
-            {[...Array(Math.max(0, 4 - invoice.items.length))].map((_, i) => (
-              <tr key={i} style={{ height: '80px', borderBottom: '1px solid #eee' }}>
-                <td></td>
-                <td style={{ background: '#f8f8f8' }}></td>
-                <td></td>
-                <td style={{ background: '#f8f8f8' }}></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Summary Section */}
-      <div className="flex justify-between items-start" style={{ padding: '20px 60px' }}>
-        <div>
-          <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
-          <div style={{ position: 'relative', border: '1px solid #eee', padding: '10px', borderRadius: '12px', display: 'inline-block', background: 'white' }}>
-            <QRCodeSVG value={upiLink} size={130} level="H" />
-            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '40px', height: '40px', background: '#6b8341', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-              <div style={{ width: '30px', height: '30px', background: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                <img src="/scscsc.jpg" alt="logo" style={{ width: '190%', height: '190%', objectFit: 'cover', objectPosition: 'center 60%' }} />
+          <div style={{ textAlign: 'right' }}>
+            {logoUrl && (
+              <img src={logoUrl} alt="studio-logo" style={{ maxHeight: '60px', width: 'auto', marginBottom: '8px', marginLeft: 'auto' }} />
+            )}
+            <h2 style={{ fontSize: '28px', fontWeight: '900', margin: '0 0 5px', letterSpacing: '0.5px' }}>mvee.cuts</h2>
+            <p style={{ fontSize: '14px', fontWeight: '400', color: COLORS.TEXT_DARK, margin: 0 }}>INVOICE NO: #{invoice.id.replace('INV-', '')}</p>
+            
+            <div style={{ marginTop: '25px', display: 'grid', gap: '8px', justifyItems: 'end' }}>
+              <div style={{ display: 'flex', gap: '40px' }}>
+                <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Date</span>
+                <span style={{ fontWeight: '700', width: '100px', textAlign: 'right' }}>{invoice.date}</span>
+              </div>
+              <div style={{ display: 'flex', gap: '40px' }}>
+                <span style={{ color: COLORS.TEXT_MUTED, fontWeight: '600' }}>Invoice Due</span>
+                <span style={{ fontWeight: '700', width: '100px', textAlign: 'right' }}>{invoice.dueDate}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ width: '320px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', padding: '0 10px' }}>
-            <span style={{ fontWeight: '600', color: COLORS.TEXT_MUTED }}>Sub Total</span>
-            <span style={{ fontWeight: '700' }}>₹{(invoice.amount + (invoice.discount || 0)).toLocaleString()}</span>
+        {/* Item Table */}
+        <div style={{ padding: '20px 60px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) 90px 110px 110px', background: COLORS.GREEN, color: 'white' }}>
+            <div style={{ padding: '15px 25px', textAlign: 'left', fontWeight: '700' }}>Item description</div>
+            <div style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700', background: '#3b4321' }}>Quantity</div>
+            <div style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700' }}>Unite Price</div>
+            <div style={{ padding: '15px 10px', textAlign: 'center', fontWeight: '700', background: '#3b4321' }}>Total Price</div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', padding: '0 10px' }}>
-            <span style={{ fontWeight: '600', color: COLORS.TEXT_MUTED }}>Discount</span>
-            <span style={{ fontWeight: '700' }}>₹{(invoice.discount || 0).toLocaleString()}</span>
-          </div>
-          <div style={{ display: 'flex', borderRadius: '4px', overflow: 'hidden', height: '45px' }}>
-            <div style={{ flex: 1, background: COLORS.GREEN, color: 'white', display: 'flex', alignItems: 'center', paddingLeft: '20px', fontWeight: '800', fontSize: '18px' }}>Grand Total</div>
-            <div style={{ width: '120px', background: COLORS.BLUE, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '18px' }}>₹{invoice.amount.toLocaleString()}/-</div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {invoice.items.map((item, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) 90px 110px 110px', borderBottom: '1px solid #eee' }}>
+                <div style={{ padding: '20px 25px', fontWeight: '700', fontSize: '15px' }}>{item.description}</div>
+                <div style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>{String(item.quantity).padStart(2, '0')}</div>
+                <div style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700' }}>₹{item.price}</div>
+                <div style={{ padding: '20px 10px', textAlign: 'center', fontWeight: '700', background: '#f8f8f8' }}>₹{item.quantity * item.price}</div>
+              </div>
+            ))}
+            {[...Array(Math.max(0, 4 - invoice.items.length))].map((_, i) => (
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) 90px 110px 110px', height: '80px', borderBottom: '1px solid #eee' }}>
+                <div />
+                <div style={{ background: '#f8f8f8' }} />
+                <div />
+                <div style={{ background: '#f8f8f8' }} />
+              </div>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Footer Image */}
-      <div style={{ borderTop: '1px solid #eee', marginTop: 'auto', position: 'relative', overflow: 'hidden' }}>
-        <img src="/contact.png" alt="footer" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        {/* Summary Section */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', padding: '20px 60px', alignItems: 'end', marginTop: '10px' }}>
+          <div>
+            <p style={{ fontWeight: '700', margin: '0 0 10px' }}>Payment method</p>
+            <div style={{ position: 'relative', border: '1px solid #eee', padding: '15px', borderRadius: '12px', display: 'inline-block', background: 'white' }}>
+              <QRCodeSVG value={upiLink} size={130} level="H" />
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '40px', height: '40px', background: '#6b8341', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+                <div style={{ width: '30px', height: '30px', background: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <img src="/scscsc.jpg" alt="logo" style={{ width: '190%', height: '190%', objectFit: 'cover', objectPosition: 'center 60%' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', padding: '0 10px' }}>
+              <span style={{ fontWeight: '600', color: COLORS.TEXT_MUTED }}>Sub Total</span>
+              <span style={{ fontWeight: '700' }}>₹{(invoice.amount + (invoice.discount || 0)).toLocaleString()}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', padding: '0 10px' }}>
+              <span style={{ fontWeight: '600', color: COLORS.TEXT_MUTED }}>Discount</span>
+              <span style={{ fontWeight: '700' }}>₹{(invoice.discount || 0).toLocaleString()}</span>
+            </div>
+            <div style={{ display: 'flex', borderRadius: '4px', overflow: 'hidden', height: '50px' }}>
+              <div style={{ flex: 1, background: COLORS.GREEN, color: 'white', display: 'flex', alignItems: 'center', paddingLeft: '20px', fontWeight: '800', fontSize: '20px' }}>Grand Total</div>
+              <div style={{ width: '130px', background: COLORS.BLUE, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '20px' }}>₹{invoice.amount.toLocaleString()}/-</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Image */}
+        <div style={{ marginTop: 'auto' }}>
+          <img src="/contact.png" alt="footer" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '40px' }}>
